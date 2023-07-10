@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import { useState } from 'react';
-import { View, Button, StyleSheet, Text, TextInput } from 'react-native';
+import { View, Button, StyleSheet, Text, TextInput, FlatList } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -64,16 +64,17 @@ function TasksScreen() {
   );
 }
 
-function NotesScreen(props) {
+function NotesScreen({navigation}) {
   const [enteredNotesText, setEnteredNotesText] = useState('');
+  const [notesList, setNotesList] = useState([]);
 
     function NotesInputHandler(enteredText) {
         setEnteredNotesText(enteredText);
     }
     
     function addNotesHandler() {
-        props.onAddNotes(enteredNotesText);
-        setEnteredNotesText('');
+      setNotesList(prevNotesList => [...prevNotesList, enteredNotesText]);
+      setEnteredNotesText('');
     }
 
   return (
@@ -83,11 +84,13 @@ function NotesScreen(props) {
         <View style = {styles.button}>
           <Button title='Add Note' onPress={addNotesHandler} color="#b180f0" />
         </View>
-          <View style = {styles.button}>
-            <Button title="Cancel" onPress={props.onCancel} color="#f31282" />
-          </View>
       </View>
       <Text>Your Notes:</Text>  
+      <FlatList
+        data={notesList}
+        renderItem={({ item }) => <Text>{item}</Text>}
+        keyExtractor={(item, index) => index.toString()}
+      />
     </View>
   );
 }
