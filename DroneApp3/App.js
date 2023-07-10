@@ -1,14 +1,31 @@
-import React from 'react';
-import { View, Button, StyleSheet, Text } from 'react-native';
+import React, {useEffect} from 'react';
+import { useState } from 'react';
+import { View, Button, StyleSheet, Text, TextInput } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 
 // Define your screens
 function HomeScreen({ navigation }) {
+  const [enteredGoalText, setEnteredGoalText] = useState('');
+
+  function goalInputHandler(enteredText) {
+    setEnteredGoalText(enteredText);
+  }
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigation.navigate('Notes Screen');
+    }, 30000);
+  
+    return () => clearTimeout(timer); // Clear the timer if the component unmounts
+  }, [navigation]);
+    
+
   return (
     <View style={styles.container}>
-      <Text> Which one are you?</Text>
+      <TextInput style={styles.textInput} placeholder='Your Name' onChangeText={goalInputHandler} value={enteredGoalText} />
+      <Text> Which role are you?</Text>
       <Button
         title="Mission Commander"
         onPress={() => navigation.navigate('Awareness Screen')}
@@ -47,6 +64,34 @@ function TasksScreen() {
   );
 }
 
+function NotesScreen(props) {
+  const [enteredNotesText, setEnteredNotesText] = useState('');
+
+    function NotesInputHandler(enteredText) {
+        setEnteredNotesText(enteredText);
+    }
+    
+    function addNotesHandler() {
+        props.onAddNotes(enteredNotesText);
+        setEnteredNotesText('');
+    }
+
+  return (
+    <View style={styles.container}>
+      <TextInput style={styles.textInput} placeholder='Add notes on your tasks' onChangeText={NotesInputHandler} value={enteredNotesText} />
+      <View style = {styles.buttonContainer}>
+        <View style = {styles.button}>
+          <Button title='Add Note' onPress={addNotesHandler} color="#b180f0" />
+        </View>
+          <View style = {styles.button}>
+            <Button title="Cancel" onPress={props.onCancel} color="#f31282" />
+          </View>
+      </View>
+      <Text>Your Notes:</Text>  
+    </View>
+  );
+}
+
 const Stack = createStackNavigator();
 
 function App() {
@@ -56,6 +101,7 @@ function App() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Awareness Screen" component={AwarenessScreen} />
         <Stack.Screen name="Tasks Screen" component={TasksScreen} />
+        <Stack.Screen name="Notes Screen" component={NotesScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -76,7 +122,24 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 80,
     marginVertical: 10,
-  }
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#e4d0ff',
+    backgroundColor: '#e4d0ff',
+    color: '#120438',
+    borderRadius: 6,
+    width: '100%',
+    padding: 16
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginTop: 8
+  },
+  button: {
+    width: 100,
+    marginHorizontal: 8
+  },
 });
 
 export default App;
