@@ -14,6 +14,7 @@ const MQTTContext = createContext();
 const MQTTProvider = ({ children }) => {
   const [mqttClient, setMqttClient] = useState(null);
   const [tasks, setTasks] = useState("none");
+  const [enteredName, setEnteredName] = useState('');
   //const [buttonColor,setButtonColor] = useState(styles.redButton);
   const [buttonText,setButtonText] = useState('WAIT');
   const topicCallbacks = {
@@ -77,16 +78,19 @@ const MQTTProvider = ({ children }) => {
     };
   }, []);
 
-  return <MQTTContext.Provider value={[mqttClient,tasks,buttonText]}>{children}</MQTTContext.Provider>;
+  return <MQTTContext.Provider value={[mqttClient,tasks,buttonText,enteredName,setEnteredName]}>{children}</MQTTContext.Provider>;
 };
 
 
 function HomeScreen({ navigation }) {
   const [enteredGoalText, setEnteredGoalText] = useState('');
   const [goalList, setGoalList] = useState([]);
+  const children = useContext(MQTTContext);
+  const setEnteredName = children[4];
 
     function goalInputHandler(enteredText) {
       setEnteredGoalText(enteredText);
+      setEnteredName(enteredText);
     }
     
     function addGoalHandler() {
@@ -104,7 +108,7 @@ function HomeScreen({ navigation }) {
       </View>
       <FlatList
         data={goalList}
-        renderItem={({ item }) => <Text style={styles.listItem}>{item}</Text>}
+        renderItem={({ item }) => <Text style={styles.listItem}> Welcome, {item}</Text>}
         keyExtractor={(item, index) => index.toString()}
         style={styles.listContainer}
       />
@@ -126,8 +130,12 @@ function HomeScreen({ navigation }) {
 }
 
 function AwarenessScreen() {
+  const children = useContext(MQTTContext);
+  const enteredName = children[3];
+
   return (
     <View style={styles.container}>
+      <Text>{enteredName}</Text>
       {/* JSX for ThirdScreen */}
     </View>
   );
@@ -137,9 +145,11 @@ function TasksScreen() {
   const children = useContext(MQTTContext);
   const tasks = children[1];
   const buttonText = children[2];
+  const enteredName = children[3];
 
   return (
     <View style={styles.container}>
+      <Text>{enteredName}</Text>
       <Text>Your tasks are {tasks}</Text>
       <View style = {styles.redButton}>
           <Button title={buttonText} color={"white"} />

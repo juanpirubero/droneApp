@@ -16,7 +16,7 @@ topic_start_tasks = 'UAV/topic/start'
 #this will change the button from GO to wait
 topic_end_curr_tasks = 'UAV/topic/done'
 #change here 
-topic = topic_start_tasks
+topic = topic_tasks
 connected = False 
 
 #connectt 
