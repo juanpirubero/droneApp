@@ -16,7 +16,7 @@ topic_start_tasks = 'UAV/topic/start'
 #this will change the button from GO to wait
 topic_end_curr_tasks = 'UAV/topic/done'
 #change here 
-topic = topic_tasks
+topic = topic_start_tasks
 connected = False 
 
 #connectt 
@@ -44,5 +44,5 @@ while not connected:
 while True:
     print('publishing')
     #change the second argument to any message to test
-    client.publish(topic,"current topic " + str(topic))
+    client.publish(topic,"Hello")
     time.sleep(5)

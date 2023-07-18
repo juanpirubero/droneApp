@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Button, StyleSheet, Text } from 'react-native';
+import { View, Button, StyleSheet, Text, TextInput, FlatList } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createContext, useState,useEffect,useContext } from 'react';
@@ -82,8 +82,32 @@ const MQTTProvider = ({ children }) => {
 
 
 function HomeScreen({ navigation }) {
+  const [enteredGoalText, setEnteredGoalText] = useState('');
+  const [goalList, setGoalList] = useState([]);
+
+    function goalInputHandler(enteredText) {
+      setEnteredGoalText(enteredText);
+    }
+    
+    function addGoalHandler() {
+      setGoalList((prevGoalList) => [...prevGoalList, enteredGoalText]);
+      setEnteredGoalText('');
+    }
+
   return (
     <View style={styles.container}>
+      <TextInput style={styles.textInput} placeholder='Type Your Name' onChangeText={goalInputHandler} value={enteredGoalText} />
+      <View style = {styles.buttonContainer}>
+        <View style = {styles.button}>
+          <Button title='Add' onPress={addGoalHandler} color="#b180f0" />
+        </View>
+      </View>
+      <FlatList
+        data={goalList}
+        renderItem={({ item }) => <Text style={styles.listItem}>{item}</Text>}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.listContainer}
+      />
       <Text> Which one are you?</Text>
       <Button
         title="Mission Commander"
@@ -145,6 +169,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 10
+  },
+  textInput: {
+    width: '80%',
+    borderBottomColor: 'black',
+    borderBottomWidth: 1,
+    marginBottom: 10,
+  },
+  listContainer: {
+    flexGrow: 0, // Ensure the FlatList takes up remaining space
+    width: '80%',
+  },
+  listItem: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 5, // Add margin bottom between list items
   },
   redButton: {
     fontSize: 26,
@@ -155,7 +196,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 80,
     marginVertical: 10,
-  }
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginTop: 5,
+    marginBottom: 10
+  },
+  button: {
+    width: 100,
+    marginHorizontal: 8,
+    marginBottom: 10
+  },
 });
 
 export default App;
