@@ -41,11 +41,13 @@ while not connected:
     pass
 
 
-json_message = {"task": "raise throttle" , "role":"RPIC", "directions": "move throttle just above neutral position"}
+json_message = {"task": "raise throttle" , "role": "RPIC", "directions": "move throttle just above neutral position"}
 # Publish the message continuously 
-
 while True:
     print('publishing')
     #change the second argument to any message to test
-    client.publish(topic,json.dumps(json_message))
+    task = json.dumps(json_message["task"])
+    client.publish(topic, task.strip('\"'))
     time.sleep(5)
+
+

@@ -150,7 +150,7 @@ function TasksScreen() {
   return (
     <View style={styles.container}>
       <Text>{enteredName}</Text>
-      <Text>Your tasks are {tasks}</Text>
+      <Text>Your tasks are: {tasks}</Text>
       <View style = {styles.redButton}>
           <Button title={buttonText} color={"white"} />
         </View>
