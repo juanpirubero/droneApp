@@ -16,10 +16,10 @@ topic_start_tasks = 'UAV/topic/start'
 #this will change the button from GO to wait
 topic_end_curr_tasks = 'UAV/topic/done'
 #change here 
-topic = topic_end_curr_tasks
+topic = topic_tasks
 connected = False 
 
-#connectt 
+#connect 
 def on_connect(client, userdata, flags, rc):
     global connected
     if rc == 0:
@@ -41,13 +41,25 @@ while not connected:
     pass
 
 
-json_message = {"task": "raise throttle" , "role": "RPIC", "directions": "move throttle just above neutral position"}
-# Publish the message continuously 
-while True:
+
+
+# note: we could even make another key in the json message for time so each task could have its own time to complete, 
+# or we could just keep the time the same for all the different tasks. lmk what you guys prefer / if it matters 
+
+# i also left the tasks numbered bc jane will send me what she wants the task to say 
+
+json_message = {"task": ["Raise Throttle", "task2", "task3", "task4", "task5"], "directions": ["Move throttle just above neutral position.", "directions2", "directions3", "directions4", "directions5"]}
+
+task_list = json_message["task"]
+directions_list = json_message["directions"]
+
+for i in range(len(task_list)):
     print('publishing')
-    #change the second argument to any message to test
-    task = json.dumps(json_message["task"])
-    client.publish(topic, task.strip('\"'))
+    # publish the task 
+    client.publish(topic, task_list[i])
+    # publish the directions (if needed)
+    # client.publish(topic, directions_list[i])
     time.sleep(5)
+
 
 
