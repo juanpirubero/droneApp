@@ -88,21 +88,27 @@ function HomeScreen({ navigation }) {
   const children = useContext(MQTTContext);
   const setEnteredName = children[4];
 
-    function goalInputHandler(enteredText) {
-      setEnteredGoalText(enteredText);
-      setEnteredName(enteredText);
-    }
-    
-    function addGoalHandler() {
-      setGoalList((prevGoalList) => [...prevGoalList, enteredGoalText]);
-      setEnteredGoalText('');
-    }
+  function goalInputHandler(enteredText) {
+    setEnteredGoalText(enteredText);
+    setEnteredName(enteredText);
+  }
+
+  function addGoalHandler() {
+    setGoalList((prevGoalList) => [...prevGoalList, enteredGoalText]);
+    setEnteredGoalText('');
+  }
 
   return (
     <View style={styles.container}>
-      <TextInput style={styles.textInput} placeholder='Type Your Name' onChangeText={goalInputHandler} value={enteredGoalText} />
-      <View style = {styles.buttonContainer}>
-        <View style = {styles.button}>
+      <Text style={styles.headerText}>Fuzz Testing</Text>
+      <TextInput
+        style={styles.textInput}
+        placeholder='Type Your Name'
+        onChangeText={goalInputHandler}
+        value={enteredGoalText}
+      />
+      <View style={styles.buttonContainer}>
+        <View style={styles.button}>
           <Button title='Add' onPress={addGoalHandler} color="#b180f0" />
         </View>
       </View>
@@ -112,19 +118,21 @@ function HomeScreen({ navigation }) {
         keyExtractor={(item, index) => index.toString()}
         style={styles.listContainer}
       />
-      <Text> Which one are you?</Text>
-      <Button
-        title="Mission Commander"
-        onPress={() => navigation.navigate('Awareness Screen')}
-      />
-      <Button
-        title="Safety Operator"
-        onPress={() => navigation.navigate('Awareness Screen')}
-      />
-      <Button
-        title="RPIC"
-        onPress={() => navigation.navigate('Tasks Screen')}
-      />
+      <Text style={styles.infoText}> Which role are you?</Text>
+      <View style={styles.buttonsGroup}>
+        <Button
+          title="Mission Commander"
+          onPress={() => navigation.navigate('Awareness Screen')}
+        />
+        <Button
+          title="Safety Operator"
+          onPress={() => navigation.navigate('Awareness Screen')}
+        />
+        <Button
+          title="RPIC"
+          onPress={() => navigation.navigate('Tasks Screen')}
+        />
+      </View>
     </View>
   );
 }
@@ -135,7 +143,7 @@ function AwarenessScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>{enteredName}</Text>
+      <Text style={styles.headerText}> {enteredName}</Text>
       {/* JSX for ThirdScreen */}
     </View>
   );
@@ -147,13 +155,23 @@ function TasksScreen() {
   const buttonText = children[2];
   const enteredName = children[3];
 
+  let buttonColorStyle;
+
+  if (buttonText === 'WAIT') {
+    buttonColorStyle = styles.red;
+  } else if (buttonText === 'GO') {
+    buttonColorStyle = styles.green;
+  } else if (buttonText === 'DONE') {
+    buttonColorStyle = styles.blue;
+  }
+
   return (
     <View style={styles.container}>
-      <Text>{enteredName}</Text>
-      <Text>Your tasks are: {tasks}</Text>
-      <View style = {styles.redButton}>
-          <Button title={buttonText} color={"white"} />
-        </View>
+      <Text style={styles.headerText}> {enteredName}</Text>
+      <Text style={styles.infoText}>Your tasks are {tasks}</Text>
+      <View style={[styles.redButton, buttonColorStyle]}>
+        <Button title={buttonText} color={'white'} />
+      </View>
     </View>
   );
 }
@@ -164,58 +182,77 @@ function App() {
   return (
     <MQTTProvider>
       <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Awareness Screen" component={AwarenessScreen} />
-        <Stack.Screen name="Tasks Screen" component={TasksScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Awareness Screen" component={AwarenessScreen} />
+          <Stack.Screen name="Tasks Screen" component={TasksScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </MQTTProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0.5,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10
+    backgroundColor: 'light grey',
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 30,
   },
   textInput: {
     width: '80%',
     borderBottomColor: 'black',
     borderBottomWidth: 1,
     marginBottom: 10,
+    paddingVertical: 5,
   },
   listContainer: {
-    flexGrow: 0, // Ensure the FlatList takes up remaining space
     width: '80%',
+    marginBottom: 20,
   },
   listItem: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 5, // Add margin bottom between list items
+    fontSize: 18,
+    marginBottom: 5,
+  },
+  infoText: {
+    fontSize: 18,
+    marginBottom: 10,
   },
   redButton: {
     fontSize: 26,
     justifyContent: 'center',
     alignItems: 'center',
-    color: 'red',
     backgroundColor: 'red',
     borderRadius: 20,
-    padding: 80,
+    padding: 70,
     marginVertical: 10,
   },
   buttonContainer: {
     flexDirection: 'row',
-    marginTop: 5,
-    marginBottom: 10
+    marginBottom: 10,
   },
   button: {
     width: 100,
     marginHorizontal: 8,
-    marginBottom: 10
+    marginBottom: 10,
+  },
+  buttonsGroup: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  red: {
+    backgroundColor: 'red',
+  },
+  green: {
+    backgroundColor: 'green',
+  },
+  blue: {
+    backgroundColor: 'blue',
   },
 });
 
