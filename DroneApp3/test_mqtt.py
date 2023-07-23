@@ -41,23 +41,41 @@ while not connected:
     pass
 
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> e0e135ee9a03db8b3e24026c65b228f162eb75a8
 # note: we could even make another key in the json message for time so each task could have its own time to complete, 
 # or we could just keep the time the same for all the different tasks. lmk what you guys prefer / if it matters 
 
 # i also left the tasks numbered bc jane will send me what she wants the task to say 
 
+<<<<<<< HEAD
 json_message = {"task": ["set geofence parameters to altitude of 300", "raise throttle once you see the drone takeoff" , "change RTL parameters to a different home location" , "change to RTL to test the change", "change mode from stabilized to land"], "directions": ["Move throttle just above neutral position.", "directions2", "directions3", "directions4", "directions5"]}
+=======
+json_message = {"task": ["Raise Throttle", "task2", "task3", "task4", "task5"], "directions": ["Move throttle just above neutral position.", "directions2", "directions3", "directions4", "directions5"]}
+>>>>>>> e0e135ee9a03db8b3e24026c65b228f162eb75a8
 
 task_list = json_message["task"]
 directions_list = json_message["directions"]
 
 for i in range(len(task_list)):
+<<<<<<< HEAD
     # publish the task 
     combined_message = task_list[i] + "\n" + directions_list[i]
 
     client.publish(topic, combined_message)
     # publish the directions (if needed)
     #client.publish(topic, directions_list[i])
+=======
+    print('publishing')
+    # publish the task 
+    client.publish(topic, task_list[i])
+    # publish the directions (if needed)
+    # client.publish(topic, directions_list[i])
+>>>>>>> e0e135ee9a03db8b3e24026c65b228f162eb75a8
     time.sleep(5)
+
 
 
