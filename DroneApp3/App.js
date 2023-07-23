@@ -42,13 +42,13 @@ const MQTTProvider = ({ children }) => {
   //change the button color 
   function onStart(message) {
     console.log('Received message for operator to run tests:', message.payloadString);
-    setButtonText('GO');
+    setButtonText('Press When You Are Done!');
   }
 
   //change the button color 
   function onDone(message) {
     console.log('Received message for operator to stop:', message.payloadString);
-    setButtonText('DONE');
+    setButtonText('Thank You! Please Wait');
   }
 
 
@@ -78,7 +78,7 @@ const MQTTProvider = ({ children }) => {
     };
   }, []);
 
-  return <MQTTContext.Provider value={[mqttClient,tasks,buttonText,enteredName,setEnteredName]}>{children}</MQTTContext.Provider>;
+  return <MQTTContext.Provider value={[mqttClient,tasks,buttonText,enteredName,setEnteredName, setButtonText]}>{children}</MQTTContext.Provider>;
 };
 
 
@@ -88,14 +88,19 @@ function HomeScreen({ navigation }) {
   const children = useContext(MQTTContext);
   const setEnteredName = children[4];
 
+  const [addButtonDisabled, setAddButtonDisabled] = useState(false);
+
   function goalInputHandler(enteredText) {
-    setEnteredGoalText(enteredText);
-    setEnteredName(enteredText);
+      setEnteredGoalText(enteredText);
+      setEnteredName(enteredText);
   }
 
   function addGoalHandler() {
-    setGoalList((prevGoalList) => [...prevGoalList, enteredGoalText]);
-    setEnteredGoalText('');
+    if (!addButtonDisabled) {
+      setGoalList((prevGoalList) => [...prevGoalList, enteredGoalText]);
+      setEnteredGoalText('');
+      setAddButtonDisabled(true)
+    }
   }
 
   return (
@@ -149,29 +154,86 @@ function AwarenessScreen() {
   );
 }
 
-function TasksScreen() {
+function TasksScreen({navigation}) {
   const children = useContext(MQTTContext);
   const tasks = children[1];
-  const buttonText = children[2];
+  const globalButtonText = children[2];
   const enteredName = children[3];
+  const setButtonText = children[4];
+
+  const [buttonText, setLocalButtonText] = useState(globalButtonText);
+
+  useEffect(() => {
+    // Update the local state when the global state (globalButtonText) changes
+    setLocalButtonText(globalButtonText);
+  }, [globalButtonText]);
 
   let buttonColorStyle;
-
   if (buttonText === 'WAIT') {
     buttonColorStyle = styles.red;
-  } else if (buttonText === 'GO') {
+  } else if (buttonText === 'Press When You Are Done') {
     buttonColorStyle = styles.green;
-  } else if (buttonText === 'DONE') {
+  } else if (buttonText === 'Thank You! Please Wait') {
     buttonColorStyle = styles.blue;
+  }
+
+  function handleDonePress() {
+    if (buttonText === 'Thank You! Please Wait') {
+      navigation.navigate('Notes Screen');
+    } else {
+      // Handle the logic for WAIT to GO transition
+      // and GO to DONE transition here
+      if (buttonText === 'WAIT') {
+        setLocalButtonText('Press When You Are Done');
+      } else if (buttonText === 'Press When You Are Done') {
+        setLocalButtonText('Thank You! Please Wait');
+      }
+    }
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}> {enteredName}</Text>
-      <Text style={styles.infoText}>Your tasks are {tasks}</Text>
+      <Text style={styles.infoText}>{tasks}</Text>
       <View style={[styles.redButton, buttonColorStyle]}>
-        <Button title={buttonText} color={'white'} />
+        <Button title={buttonText} color={'white'} onPress={handleDonePress} />
       </View>
+    </View>
+  );
+}
+
+function NotesScreen() {
+  const [noteText, setNoteText] = useState('');
+  const [noteList, setNoteList] = useState([]);
+
+  function addNoteHandler() {
+    if (noteText.trim() !== '') {
+      setNoteList(prevNoteList => [...prevNoteList, noteText]);
+      setNoteText('');
+    }
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.headerText}>Notes</Text>
+      <TextInput
+        style={styles.textInput}
+        placeholder="Type your notes here..."
+        onChangeText={text => setNoteText(text)}
+        value={noteText}
+        multiline
+      />
+      <View style={styles.buttonContainer}>
+        <View style={styles.button}>
+          <Button title="Add Note" onPress={addNoteHandler} color="#b180f0" />
+        </View>
+      </View>
+      <FlatList
+        data={noteList}
+        renderItem={({ item }) => <Text style={styles.listItem}>{item}</Text>}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.listContainer}
+      />
     </View>
   );
 }
@@ -186,6 +248,7 @@ function App() {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Awareness Screen" component={AwarenessScreen} />
           <Stack.Screen name="Tasks Screen" component={TasksScreen} />
+          <Stack.Screen name="Notes Screen" component={NotesScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </MQTTProvider>
@@ -220,7 +283,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   infoText: {
-    fontSize: 18,
+    fontSize: 26,
     marginBottom: 10,
   },
   redButton: {
