@@ -41,25 +41,13 @@ while not connected:
     pass
 
 
+tasks_array = ["Raise Throttle", "task2", "task3", "task4", "task5"]
 
-
-# note: we could even make another key in the json message for time so each task could have its own time to complete, 
-# or we could just keep the time the same for all the different tasks. lmk what you guys prefer / if it matters 
-
-# i also left the tasks numbered bc jane will send me what she wants the task to say 
-
-json_message = {"task": ["Raise Throttle", "task2", "task3", "task4", "task5"], "directions": ["Move throttle just above neutral position.", "directions2", "directions3", "directions4", "directions5"]}
-
-task_list = json_message["task"]
-directions_list = json_message["directions"]
-
-for i in range(len(task_list)):
+# using a for loop
+for task in tasks_array:
     print('publishing')
-    # publish the task 
-    client.publish(topic, task_list[i])
-    # publish the directions (if needed)
-    # client.publish(topic, directions_list[i])
+    task_json = json.dumps(task)
+    client.publish(topic, task_json.strip('\"'))
     time.sleep(5)
-
-
+    
 
