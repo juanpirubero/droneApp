@@ -41,7 +41,7 @@ while not connected:
     pass
 
 
-tasks_array = ["Raise Throttle", "task2", "task3", "task4", "task5"]
+tasks_array = ["Set geofence parameters to altitude of 300.", "Raise throttle once you see the drone takeoff." , "Change RTL parameters to a different home location." , "Change to RTL to test the change.", "Change mode from stabilized to land." ] 
 
 # using a for loop
 for task in tasks_array:
