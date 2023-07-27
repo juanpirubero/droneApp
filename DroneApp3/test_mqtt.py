@@ -25,6 +25,9 @@ def on_connect(client, userdata, flags, rc):
         connected = True 
     else:
         print("Can't connect")
+
+
+
 # Create an MQTT client
 client = mqtt.Client(transport="websockets")
 # Set the callback functions
